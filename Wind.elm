@@ -72,7 +72,7 @@ view : Model -> Html
 view m =
   p [ id "wind"
     , style [ ("color", speedColor m.windSpeed) ] ]
-    [ text <| toString <| round m.windSpeed
+    [ text <| (toString <| round m.windSpeed) ++ " knots"
     , p [ style <| arrowStyle m ]
         [ text "↑" ]
     ]
