@@ -1,15 +1,18 @@
 module Wind where
 
 import Random (Seed, initialSeed, generate, float, int)
-import Html (..)
-import Html.Attributes (..)
+import Html (p, text, Html)
+import Html.Attributes (id, style)
 import Signal
 import Time (..)
 import String (toInt)
 
+type alias Direction = Int
+type alias Speed = Float
+
 type alias Model =
-  { windDirection : Float
-  , windSpeed : Float
+  { windDirection : Direction
+  , windSpeed : Speed
   , seed : Seed
   }
 
@@ -29,46 +32,56 @@ updateWind = updateWindSpeed << updateWindDirection
 
 updateWindSpeed : Model -> Model
 updateWindSpeed m =
-  let (prob, seed') = generate (float 0 1) m.seed
-      windSpeed' = (m.windSpeed * 0.9) + (prob * 0.1)
+  let (prob, seed') = generate (float -1 10) m.seed
+      windSpeed' = max 0 <| m.windSpeed `updateWindSpeedBy` prob
   in { m | seed <- seed', windSpeed <- windSpeed' }
+
+updateWindSpeedBy : Speed -> Speed -> Speed
+updateWindSpeedBy x d = (9*x + d) / 10
+
 
 updateWindDirection : Model -> Model
 updateWindDirection m =
-  let (prob, seed') = generate (float 0 360) m.seed
-      windDirection' = (m.windDirection * 0.9) + (prob * 0.1)
+  let (prob, seed') = generate (int -5 5) m.seed
+      windDirection' = (m.windDirection + prob) % 360
   in { m | seed <- seed', windDirection <- windDirection' }
 
 update : a -> Model -> Model
 update _ = updateWind
 
 
-transformAngle : Float -> String
-transformAngle direction = "rotate(" ++ toString (round direction) ++ "deg)"
-        
+
+
+transformAngle : Int -> String
+transformAngle direction = "rotate(" ++ toString direction ++ "deg)"
+
 speedColor : Float -> String
-speedColor speed = 
-  let lum = round (100.0 * (1 - speed))
+speedColor speed =
+  let lum = max 0 <| round <| 100 - (speed * 10)
   in "hsl(240,100%," ++ toString lum ++ "%)"
 
-
+arrowStyle : Model -> List (String, String)
+arrowStyle m =
+  [ ("height", "22px")
+  , ("width", "16px")
+  , ("font-size", "20px")
+  , ("transform", transformAngle m.windDirection)
+  ]
 
 view : Model -> Html
-view model =
-  p [id "wind",
-  style [
-          ("height", "22px"),
-          ("width", "16px"),
-          ("font-size", "20px"),
-          ("transform", transformAngle model.windDirection), 
-          ("color", speedColor model.windSpeed)
-  ]] [text ("↑")]
+view m =
+  p [ id "wind"
+    , style [ ("color", speedColor m.windSpeed) ] ]
+    [ text <| toString <| round m.windSpeed
+    , p [ style <| arrowStyle m ]
+        [ text "↑" ]
+    ]
 
 
 
 bootstrap : Model -> Model
-bootstrap m = 
-  let (windDirection', seed') = generate (float 0 360) m.seed
+bootstrap m =
+  let (windDirection', seed') = generate (int 0 360) m.seed
   in { m | seed <- seed', windDirection <- windDirection' }
 
 
