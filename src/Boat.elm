@@ -24,7 +24,6 @@ initialModel =
 type alias Input =
   { tiller : Int
   , sheet : Int
-  , delta : Time
   }
 
 
@@ -55,10 +54,6 @@ model = Signal.foldp update initialModel input
 
 input : Signal Input
 input =
-  Signal.sampleOn delta <|
-    Signal.map3 Input
-      (Signal.map .x Keyboard.arrows)
-      (Signal.map .x Keyboard.wasd)
-      delta
-
-delta = Signal.map inSeconds (fps 40)
+  Signal.map2 Input
+    (Signal.map .x Keyboard.arrows)
+    (Signal.map .x Keyboard.wasd)
