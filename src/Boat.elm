@@ -1,9 +1,12 @@
 module Boat where
 
-import Html (text, dl, dd, dt, Html)
+import Html (text, dl, dd, dt, div, Html)
 import Html.Attributes (id, style)
 import Keyboard
 import Signal
+import Color (..)
+import Graphics.Collage (..)
+import Graphics.Element (..)
 import Time (..)
 
 type alias Model =
@@ -42,10 +45,27 @@ view m =
     , dd [] [ text <| toString m.tiller ]
     , dt [] [ text "Sheet" ]
     , dd [] [ text <| toString m.sheet ]
+    , dt [] [ text "The boat:"]
+    , dd [] [ viewBoat m ]
     ]
 
 
 
+
+viewBoat : Model -> Html
+viewBoat m =
+  div [ style <| boatStyle m ]
+      [ text "⛵️" ]
+
+boatStyle : Model -> List (String, String)
+boatStyle m =
+  [ ("height", "120px")
+  , ("width", "100px")
+  , ("font-size", "100px")
+  , ("margin-left", toString (10 * (m.sheet + 20)) ++ "px")
+  , ("text-align", "center")
+  , ("transform", "rotate(" ++ toString (10 * m.tiller) ++ "deg)")
+  ]
 
 main : Signal Html
 main = Signal.map view model
