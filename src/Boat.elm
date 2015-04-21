@@ -2,46 +2,45 @@ module Boat where
 
 import Html exposing (text, dl, dd, dt, div, Html)
 import Html.Attributes exposing (id, style)
-import Keyboard
-import Signal
-import Color exposing (..)
-import Time exposing (..)
+import Signal exposing ((<~))
+
+import Boat.Tiller as Tiller
+import Boat.Sheet as Sheet
 
 
 type alias Model =
-  { tiller : Int
-  , sheet : Int
+  { tiller : Tiller.Model
+  , sheet : Sheet.Model
   }
 
 
-initialModel : Model
-initialModel =
-  { tiller = 0
-  , sheet = 0
+init : Model
+init =
+  { tiller = Tiller.init
+  , sheet = Sheet.init
   }
 
 
-type alias Input =
-  { tiller : Int
-  , sheet : Int
-  , delta : Time
-  }
+type Action
+  = TillerAction Tiller.Action
+  | SheetAction Sheet.Action
 
 
-update : Input -> Model -> Model
-update i m =
-  { m | sheet <- clamp -20 20 <| m.sheet + i.sheet
-  , tiller <- clamp -20 20 <| m.tiller + i.tiller }
+update : Action -> Model -> Model
+update action m =
+  case action of
+    TillerAction action' -> { m | tiller <- Tiller.update action' m.tiller }
+    SheetAction action' -> { m | sheet <- Sheet.update action' m.sheet }
 
 
 view : Model -> Html
 view m =
   dl []
-    [ dt [] [ text "Tiller" ]
-    , dd [] [ text <| toString m.tiller ]
-    , dt [] [ text "Sheet" ]
-    , dd [] [ text <| toString m.sheet ]
-    , dt [] [ text "The boat:"]
+    [ dt [] [ text "Tiller:" ]
+    , dd [] [ Tiller.view m.tiller ]
+    , dt [] [ text "Sheet:" ]
+    , dd [] [ Sheet.view m.sheet ]
+    , dt [] [ text "The Boat:"]
     , dd [] [ viewBoat m ]
     ]
 
@@ -63,21 +62,17 @@ boatStyle m =
   ]
 
 
-main : Signal Html
-main = Signal.map view model
+actions : Signal Action
+actions =
+  Signal.merge
+    (TillerAction <~ Tiller.actions)
+    (SheetAction <~ Sheet.actions)
 
 
 model : Signal Model
-model = Signal.foldp update initialModel input
+model = Signal.foldp update init actions
 
 
-input : Signal Input
-input =
-  Signal.sampleOn delta <|
-    Signal.map3 Input
-      (Signal.map .x Keyboard.arrows)
-      (Signal.map .x Keyboard.wasd)
-      delta
-
-delta : Signal Float
-delta = Signal.map inSeconds (fps 40)
+main : Signal Html
+main =
+  view <~ model
