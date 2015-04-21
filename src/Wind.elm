@@ -1,11 +1,11 @@
 module Wind where
 
-import Random (Seed, initialSeed, generate, float, int)
-import Html (p, text, Html)
-import Html.Attributes (id, style)
+import Random exposing (Seed, initialSeed, generate, float, int)
+import Html exposing (p, text, Html)
+import Html.Attributes exposing (id, style)
 import Signal
-import Time (..)
-import String (toInt)
+import Time exposing (..)
+import String exposing (toInt)
 
 type alias Direction = Int
 type alias Speed = Float

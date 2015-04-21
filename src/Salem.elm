@@ -1,8 +1,8 @@
 module Salem where
 
 import Signal
-import Html (div, Html)
-import Html.Attributes (id)
+import Html exposing (div, Html)
+import Html.Attributes exposing (id)
 
 import Boat
 import Wind
