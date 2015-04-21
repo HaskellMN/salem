@@ -1,13 +1,11 @@
 module Boat where
 
-import Html (text, dl, dd, dt, div, Html)
-import Html.Attributes (id, style)
+import Html exposing (text, dl, dd, dt, div, Html)
+import Html.Attributes exposing (id, style)
 import Keyboard
 import Signal
-import Color (..)
-import Graphics.Collage (..)
-import Graphics.Element (..)
-import Time (..)
+import Color exposing (..)
+import Time exposing (..)
 
 type alias Model =
   { tiller : Int
