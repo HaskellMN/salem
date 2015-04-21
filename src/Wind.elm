@@ -1,11 +1,10 @@
 module Wind where
 
-import Random exposing (Seed, initialSeed, generate, float, int)
 import Html exposing (p, text, Html)
-import Html.Attributes exposing (id, style)
-import Signal
-import Time exposing (..)
-import String exposing (toInt)
+import Html.Attributes exposing (style)
+import Random exposing (Seed, initialSeed, generate, float, int)
+import Signal exposing ((<~))
+import Time
 
 
 type alias Direction = Int
@@ -19,16 +18,17 @@ type alias Model =
   }
 
 
-initialModel : Model
-initialModel =
-  { windSpeed = 0
-  , windDirection = 0
-  , seed = initialSeed 112358
-  }
+init : Model
+init =
+  let m = { windSpeed = 0
+          , windDirection = 0
+          , seed = initialSeed 112358
+          }
+      (windDirection', seed') = generate (int 0 360) m.seed
+  in { m | seed <- seed', windDirection <- windDirection' }
 
 
-updateWind : Model -> Model
-updateWind = updateWindSpeed << updateWindDirection
+type Action = UpdateWind
 
 
 updateWindSpeed : Model -> Model
@@ -49,8 +49,9 @@ updateWindDirection m =
   in { m | seed <- seed', windDirection <- windDirection' }
 
 
-update : a -> Model -> Model
-update _ = updateWind
+
+update : Action -> Model -> Model
+update _ = updateWindSpeed << updateWindDirection
 
 
 transformAngle : Int -> String
@@ -74,27 +75,23 @@ arrowStyle m =
 
 view : Model -> Html
 view m =
-  p [ id "wind"
-    , style [ ("color", speedColor m.windSpeed) ] ]
+  p [ style [ ("color", speedColor m.windSpeed) ] ]
     [ text <| (toString <| round m.windSpeed) ++ " knots"
     , p [ style <| arrowStyle m ]
         [ text "↑" ]
     ]
 
 
-bootstrap : Model -> Model
-bootstrap m =
-  let (windDirection', seed') = generate (int 0 360) m.seed
-  in { m | seed <- seed', windDirection <- windDirection' }
-
-
-main : Signal Html
-main = Signal.map view model
+actions : Signal Action
+actions =
+  Signal.sampleOn (Time.fps 10) <| Signal.constant UpdateWind
 
 
 model : Signal Model
-model = Signal.foldp update (bootstrap initialModel) delta
+model =
+  Signal.foldp update init actions
 
 
-delta : Signal Float
-delta = Signal.map inSeconds (fps 10)
+main : Signal Html
+main =
+  view <~ model
