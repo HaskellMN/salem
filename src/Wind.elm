@@ -7,8 +7,10 @@ import Signal
 import Time exposing (..)
 import String exposing (toInt)
 
+
 type alias Direction = Int
 type alias Speed = Float
+
 
 type alias Model =
   { windDirection : Direction
@@ -25,16 +27,16 @@ initialModel =
   }
 
 
-
-
 updateWind : Model -> Model
 updateWind = updateWindSpeed << updateWindDirection
+
 
 updateWindSpeed : Model -> Model
 updateWindSpeed m =
   let (prob, seed') = generate (float -1 10) m.seed
       windSpeed' = max 0 <| m.windSpeed `updateWindSpeedBy` prob
   in { m | seed <- seed', windSpeed <- windSpeed' }
+
 
 updateWindSpeedBy : Speed -> Speed -> Speed
 updateWindSpeedBy x d = (9*x + d) / 10
@@ -46,19 +48,20 @@ updateWindDirection m =
       windDirection' = (m.windDirection + prob) % 360
   in { m | seed <- seed', windDirection <- windDirection' }
 
+
 update : a -> Model -> Model
 update _ = updateWind
-
-
 
 
 transformAngle : Int -> String
 transformAngle direction = "rotate(" ++ toString direction ++ "deg)"
 
+
 speedColor : Float -> String
 speedColor speed =
   let lum = max 0 <| round <| 100 - (speed * 10)
   in "hsl(240,100%," ++ toString lum ++ "%)"
+
 
 arrowStyle : Model -> List (String, String)
 arrowStyle m =
@@ -67,6 +70,7 @@ arrowStyle m =
   , ("font-size", "20px")
   , ("transform", transformAngle m.windDirection)
   ]
+
 
 view : Model -> Html
 view m =
@@ -78,7 +82,6 @@ view m =
     ]
 
 
-
 bootstrap : Model -> Model
 bootstrap m =
   let (windDirection', seed') = generate (int 0 360) m.seed
@@ -88,7 +91,10 @@ bootstrap m =
 main : Signal Html
 main = Signal.map view model
 
+
 model : Signal Model
 model = Signal.foldp update (bootstrap initialModel) delta
 
+
+delta : Signal Float
 delta = Signal.map inSeconds (fps 10)

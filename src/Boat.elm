@@ -7,6 +7,7 @@ import Signal
 import Color exposing (..)
 import Time exposing (..)
 
+
 type alias Model =
   { tiller : Int
   , sheet : Int
@@ -20,8 +21,6 @@ initialModel =
   }
 
 
-
-
 type alias Input =
   { tiller : Int
   , sheet : Int
@@ -30,10 +29,9 @@ type alias Input =
 
 
 update : Input -> Model -> Model
-update i m = { m | sheet <- clamp -20 20 <| m.sheet + i.sheet
-                 , tiller <- clamp -20 20 <| m.tiller + i.tiller }
-
-
+update i m =
+  { m | sheet <- clamp -20 20 <| m.sheet + i.sheet
+  , tiller <- clamp -20 20 <| m.tiller + i.tiller }
 
 
 view : Model -> Html
@@ -48,12 +46,11 @@ view m =
     ]
 
 
-
-
 viewBoat : Model -> Html
 viewBoat m =
   div [ style <| boatStyle m ]
       [ text "⛵️" ]
+
 
 boatStyle : Model -> List (String, String)
 boatStyle m =
@@ -65,11 +62,14 @@ boatStyle m =
   , ("transform", "rotate(" ++ toString (10 * m.tiller) ++ "deg)")
   ]
 
+
 main : Signal Html
 main = Signal.map view model
 
+
 model : Signal Model
 model = Signal.foldp update initialModel input
+
 
 input : Signal Input
 input =
@@ -79,4 +79,5 @@ input =
       (Signal.map .x Keyboard.wasd)
       delta
 
+delta : Signal Float
 delta = Signal.map inSeconds (fps 40)
