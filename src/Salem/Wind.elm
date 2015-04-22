@@ -1,4 +1,4 @@
-module Wind where
+module Salem.Wind where
 
 import Html exposing (p, text, Html)
 import Html.Attributes exposing (style)

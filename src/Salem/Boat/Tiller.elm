@@ -1,4 +1,4 @@
-module Boat.Tiller where
+module Salem.Boat.Tiller where
 
 import Html exposing (text, Html)
 import Keyboard

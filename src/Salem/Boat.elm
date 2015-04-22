@@ -1,4 +1,4 @@
-module Boat where
+module Salem.Boat where
 
 import Html exposing (text, dl, dd, dt, div, Html)
 import Html.Attributes exposing (id, style)

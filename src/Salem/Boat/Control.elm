@@ -1,4 +1,4 @@
-module Boat.Control where
+module Salem.Boat.Control where
 
 import Html exposing (text, Html)
 import Signal exposing ((<~))
