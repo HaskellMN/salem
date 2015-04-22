@@ -1,60 +1,45 @@
 module Boat.Tiller where
 
-
 import Html exposing (text, Html)
 import Keyboard
-import Signal exposing ((<~))
-import Time
+
+import Boat.Control as Control
 
 
-type alias Model = Int
+type alias Model = Control.Model
+type alias Action = Control.Action
+
+
+control : Control.Signature
+control =
+  Control.mkControl Keyboard.arrows
 
 
 init : Model
-init = 0
+init =
+  control.init
 
-
-type Action
-  = NoOp
-  | Left
-  | Right
-
-
-bound = 20
-
-bind = clamp (-bound) bound
 
 update : Action -> Model -> Model
-update action m =
-  case action of
-    Right -> bind <| m + 1
-    Left -> bind <| m - 1
-    NoOp -> m
+update =
+  control.update
 
 
 view : Model -> Html
-view m =
-  text <| toString m
-
-
-keyToAction : Int -> Action
-keyToAction i =
-  case i of
-    -1 -> Left
-    1 -> Right
-    _ -> NoOp
+view =
+  control.view
 
 
 actions : Signal Action
 actions =
-  Signal.map keyToAction (.x <~ Signal.sampleOn (Time.fps 30) Keyboard.arrows)
+  control.actions
 
 
 model : Signal Model
 model =
-  Signal.foldp update 0 actions
+  control.model
 
 
 main : Signal Html
 main =
-  view <~ model
+  control.main
