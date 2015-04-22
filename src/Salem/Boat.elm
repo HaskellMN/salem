@@ -37,9 +37,9 @@ update action m =
 view : Model -> Html
 view m =
   dl []
-    [ dt [] [ text "Tiller:" ]
+    [ dt [] [ text "Tiller: (←, →)" ]
     , dd [] [ Tiller.view m.tiller ]
-    , dt [] [ text "Sheet:" ]
+    , dt [] [ text "Sheet: (a, d)" ]
     , dd [] [ Sheet.view m.sheet ]
     , dt [] [ text "The Boat:"]
     , dd [] [ viewBoat m ]
