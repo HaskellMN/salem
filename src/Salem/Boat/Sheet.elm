@@ -3,43 +3,39 @@ module Salem.Boat.Sheet where
 import Html exposing (text, Html)
 import Keyboard
 
-import Boat.Control as Control
+import Salem.Boat.Control as Control
+import Salem.Component as Component
 
 
 type alias Model = Control.Model
 type alias Action = Control.Action
 
 
-control : Control.Signature
-control =
-  Control.mkControl Keyboard.wasd
+component : Component.Signature Model Action
+component =
+  Control.mkComponent Keyboard.wasd
 
 
 init : Model
 init =
-  control.init
-
+  component.init
 
 update : Action -> Model -> Model
 update =
-  control.update
-
+  component.update
 
 view : Model -> Html
 view =
-  control.view
-
+  component.view
 
 actions : Signal Action
 actions =
-  control.actions
-
+  component.actions
 
 model : Signal Model
 model =
-  control.model
-
+  component.model
 
 main : Signal Html
 main =
-  control.main
+  component.main

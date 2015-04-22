@@ -6,6 +6,8 @@ import Random exposing (Seed, initialSeed, generate, float, int)
 import Signal exposing ((<~))
 import Time
 
+import Salem.Component as Component
+
 
 type alias Direction = Int
 type alias Speed = Float
@@ -95,3 +97,14 @@ model =
 main : Signal Html
 main =
   view <~ model
+
+
+component : Component.Signature Model Action
+component =
+  { init = init
+  , update = update
+  , view = view
+  , actions = actions
+  , model = model
+  , main = main
+  }

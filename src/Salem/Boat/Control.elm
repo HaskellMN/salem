@@ -4,6 +4,8 @@ import Html exposing (text, Html)
 import Signal exposing ((<~))
 import Time
 
+import Salem.Component as Component
+
 
 type alias Model = Int
 
@@ -14,16 +16,6 @@ type Action
   = NoOp
   | Left
   | Right
-
-
-type alias Signature =
-  { init : Model
-  , update : Action -> Model -> Model
-  , view : Model -> Html
-  , actions : Signal Action
-  , model : Signal Model
-  , main : Signal Html
-  }
 
 
 bound : Int
@@ -65,8 +57,8 @@ mkModel actions =
   Signal.foldp update 0 actions
 
 
-mkControl : Signal (XField a) -> Signature
-mkControl xSignal =
+mkComponent : Signal (XField a) -> Component.Signature Model Action
+mkComponent xSignal =
   let actions = mkActions xSignal
       model = mkModel actions
   in { init = 0
