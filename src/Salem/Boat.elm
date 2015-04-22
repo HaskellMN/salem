@@ -4,8 +4,9 @@ import Html exposing (text, dl, dd, dt, div, Html)
 import Html.Attributes exposing (id, style)
 import Signal exposing ((<~))
 
-import Boat.Tiller as Tiller
-import Boat.Sheet as Sheet
+import Salem.Boat.Tiller as Tiller
+import Salem.Boat.Sheet as Sheet
+import Salem.Component as Component
 
 
 type alias Model =
@@ -76,3 +77,14 @@ model = Signal.foldp update init actions
 main : Signal Html
 main =
   view <~ model
+
+
+component : Component.Signature Model Action
+component =
+  { init = init
+  , update = update
+  , view = view
+  , actions = actions
+  , model = model
+  , main = main
+  }
