@@ -1,4 +1,4 @@
-module Boat.Sheet where
+module Salem.Boat.Sheet where
 
 import Html exposing (text, Html)
 import Keyboard
