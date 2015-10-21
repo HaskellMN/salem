@@ -9,8 +9,6 @@ import Salem.Component as Component
 
 type alias Model = Int
 
-type alias XField a = { a | x : Int }
-
 
 type Action
   = NoOp
@@ -47,7 +45,7 @@ keyToAction i =
     _ -> NoOp
 
 
-mkActions : Signal (XField a) -> Signal Action
+mkActions : Signal { a | x : Int } -> Signal Action
 mkActions xSignal =
   Signal.map keyToAction (.x <~ Signal.sampleOn (Time.fps 30) xSignal)
 
@@ -57,7 +55,7 @@ mkModel actions =
   Signal.foldp update 0 actions
 
 
-mkComponent : Signal (XField a) -> Component.Signature Model Action
+mkComponent : Signal { a | x : Int } -> Component.Signature Model Action
 mkComponent xSignal =
   let actions = mkActions xSignal
       model = mkModel actions
